@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load markdown_deux_tags %}
+{% load comments %}
+{% load comments_tags %}
+{% block content %}
+    <div class="content-body">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8">
+                    <article class="post post-1 typo">
+                        <header class="entry-header">
+                            <h1 class="entry-title">{{ article.title }}</h1>
+                            <div class="entry-meta">
+                                <span class="post-category"><a
+                                        href="{% url 'blog:category' article.category.pk %}">{{ article.category.name }}</a></span>
+
+                                <span class="post-date">
+                                    <a href="#">
+                                        <time class="entry-date"
+                                              datetime="{{ article.created_time }}">{{ article.created_time|date:'Y年n月j日' }}
+                                        </time>
+                                    </a>
+                                </span>
+
+                                <span class="post-author"><a href="#">{{ article.author.username }}</a></span>
+                                {% get_comment_count for article as num_comments %}
+                                <span class="comments-link"><a href="#">{{ num_comments }} 评论</a></span>
+                                <span class="post-views"><a href="#">{{ article.views }} 阅读</a></span>
+                            </div>
+                        </header>
+                        <div class="entry-content clearfix">
+                            {{ article.body }}
+                        </div>
+                    </article>
+                    {% if user.is_anonymous %}
+                        <div class="login-reminder">您尚未登录，请在 <a href="{% url 'login' %}">登录</a> 后评论：</div>
+                    {% endif %}
+                    {% render_comment_form for article %}
+
+
+                    {% render_comment_list for article %}
+                </main>
+                {% block aside %}
+                    {% include 'blog/sidebar.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

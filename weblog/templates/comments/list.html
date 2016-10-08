@@ -1,0 +1,33 @@
+{% load static %}
+{% load comments_tags %}
+{% load pinax_likes_tags %}
+{% for parent in comment_list %}
+    <div class="comment-panel">
+        <img src="
+
+                {% if parent.user.social_user %}{{ parent.user.mugshot }}{% else %}{{ parent.user.mugshot.url }}{% endif %}">
+        <a href=""><span>{{ parent.user.nickname }}</span></a>
+        <div class="comment-content">
+            {{ parent.comment }}
+        </div>
+
+        {#        <a href=""><i class="icon ion-thumbsup">&nbsp;105</i></a>#}
+        {% likes_widget user parent %}
+        <a href=""><i class="icon ion-chatbox-working">&nbsp;{{ parent.children.count }}</i></a>
+        <time>{{ parent.submit_date |timesince }}前</time>
+
+        {% for child in parent.children.all %}
+            <div class="inner-panel">
+                <img src="
+                        {% if child.user.social_user %}{{ child.user.mugshot }}{% else %}{{ child.user.mugshot.url }}{% endif %}">
+                <span>{{ child.user.nickname }}</span> · <span>{{ child.submit_date |timesince }}前</span>
+                <a href="">回复</a>
+                <div class="comment-content">
+                    {{ child.comment }}
+                </div>
+            </div>
+        {% endfor %}
+
+        {% render_inner_comment_form for article with parent.pk %}
+    </div>
+{% endfor %}

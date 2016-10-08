@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load highlight %}
+{% block content %}
+    {#  TO-DO: page.object_list is a paginated results  #}
+    <div class="content-body">
+        <div class="container">
+            <div class="row">
+                <main class="col-md-8">
+                    {% if query %}
+                        {% for result in page.object_list %}
+                            <article class="post post-{{ result.object.pk }}">
+                                <header class="entry-header">
+                                    <h1 class="entry-title">
+                                        <a href="{% url 'blog:detail' result.object.pk %}">{{ result.object.title }}</a>
+                                    </h1>
+                                    <div class="entry-meta">
+                                    <span class="post-category"><a
+                                            href="{% url 'blog:category' result.object.category.pk %}">{{ result.object.category.name }}</a></span>
+
+                                    <span class="post-date">
+                                        <a href="#">
+                                            <time class="entry-date"
+                                                  datetime="{{ result.object.created_time }}">{{ result.object.created_time|date:'Y年n月j日' }}</time>
+                                        </a>
+                                    </span>
+
+                                        <span class="post-author"><a
+                                                href="#">{{ result.object.author.username }}</a></span>
+                                        {% load comments_tags %}
+                                        {% get_comment_count for result.object as num_comments %}
+
+                                        <span class="comments-link"><a href="#">{{ num_comments }} 评论</a></span>
+                                        <span class="post-views"><a href="#">{{ result.object.views }} 阅读</a></span>
+                                    </div>
+                                </header>
+                                <div class="entry-content clearfix">
+                                    {% load markdown_deux_tags %}
+                                    <p>{% highlight result.object.body with query %}</p>
+                                </div>
+                            </article>
+                        {% empty %}
+                            <p>没有搜到任何结果！</p>
+                        {% endfor %}
+                    {% endif %}
+                </main>
+                {% block aside %}
+                    {% include 'blog/sidebar.html' %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
